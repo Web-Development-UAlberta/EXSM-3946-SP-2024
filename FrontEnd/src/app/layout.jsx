@@ -1,7 +1,6 @@
-import { Inter } from 'next/font/google';
-import './globals.css';
+import 'jrgcomponents/Style/Global';
+import AppWrapper from 'jrgcomponents/AppWrapper/Wrapper';
 import React from 'react';
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'UAlberta FullStack',
@@ -11,7 +10,24 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
-      <body className={inter.className}>{children}</body>
+      <body>
+        <AppWrapper
+          keepThemeToggles
+          header={{
+            components: {
+              center: 'UAlberta FullStack',
+              right: 'test',
+            },
+          }}
+          footer={{
+            components: {
+              center: 'Test',
+            },
+          }}
+        >
+          {children}
+        </AppWrapper>
+      </body>
     </html>
   );
 }
