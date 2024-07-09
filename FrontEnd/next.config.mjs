@@ -7,7 +7,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const nextConfig = {
   env: {
     NEXT_PUBLIC_APP_URI: process.env.APP_URI,
-    NEXT_PUBLIC_API_URL: process.env.API_URL,
+    NEXT_PUBLIC_API_URI: process.env.API_URI,
   },
 };
 
