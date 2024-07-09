@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"cd ../BackEnd/src && dotnet run --project DotNetAPIDemo/DotNetAPIDemo.csproj\"  \"rm -rf ./.next && next dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -41,6 +41,7 @@
     "@storybook/nextjs": "^8.0.4",
     "@storybook/react": "^8.0.4",
     "@storybook/testing-library": "^0.2.2",
+    "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.1.4",
     "eslint-config-prettier": "^9.1.0",
