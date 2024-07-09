@@ -1,5 +1,17 @@
+'use client';
 import React from 'react';
-import styles from './page.module.css';
+import useSWR from 'swr';
+import axios from 'axios';
+import { Box, Typography } from '@mui/material';
 export default function Home() {
-  return <main className={styles.main}></main>;
+  const { data } = useSWR('/weather', async () => {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/weatherforecast`);
+    return response.json();
+  });
+  console.log(data);
+  return (
+    <Box component='main'>
+      <Typography variant='h1'>Hello, World!</Typography>
+    </Box>
+  );
 }

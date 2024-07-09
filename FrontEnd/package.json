@@ -26,6 +26,7 @@
     "@mui/x-data-grid": "^6.20.3",
     "axios": "^1.7.2",
     "cookies-next": "^4.2.1",
+    "swr": "^2.2.5",
     "jrgcomponents": "^0.0.162",
     "next": "^14.2.4",
     "react": "^18.3.1",
