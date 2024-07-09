@@ -24,6 +24,7 @@ export default function Home() {
               console.log(updated);
               //await axios.put(`${process.env.NEXT_PUBLIC_API_URI}/weatherforecast`, updated);
             }}
+            excludeFields={['date']}
             ButtonComponent={Button}
             ButtonProps={{ children: 'Update', color: 'primary', variant: 'contained' }}
           />
