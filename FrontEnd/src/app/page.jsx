@@ -1,10 +1,14 @@
 'use client';
 import React from 'react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import axios from 'axios';
-import { Box, Button, Typography } from '@mui/material';
-import EditDialog from 'jrgcomponents/EditDialog';
+import { Box, IconButton } from '@mui/material';
+import { Comment, Edit } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
+import EditDialog from 'jrgcomponents/EditDialog';
+import Dialog from 'jrgcomponents/Dialog';
+import Comments from './Comments';
+
 export default function Home() {
   const { data: rows } = useSWR(
     '/posts',
@@ -21,6 +25,35 @@ export default function Home() {
     { field: 'title', headerName: 'Title', width: 150 },
     { field: 'content', headerName: 'Content', width: 150 },
     { field: 'createdAt', headerName: 'CreatedAt', width: 150 },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      renderCell: (cellValues) => {
+        return (
+          <>
+            <Dialog
+              title={`Comments of Post #${cellValues.row.id}`}
+              content={<Comments postID={cellValues.row.id} />}
+              ButtonComponent={IconButton}
+              ButtonProps={{ children: <Comment /> }}
+            />
+
+            <EditDialog
+              toUpdate={cellValues.row}
+              excludeFields={['id', 'createdAt']}
+              ButtonComponent={IconButton}
+              ButtonProps={{ children: <Edit /> }}
+              onConfirm={async (data) => {
+                console.log('New Data:', data);
+                await axios.put(`${process.env.NEXT_PUBLIC_API_URI}/api/Post/${cellValues.row.id}`, { ...cellValues.row, ...data });
+                mutate('/posts');
+              }}
+            />
+          </>
+        );
+      },
+    },
   ];
   return (
     <Box component='main'>
