@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DotNetAPIDemo.Models;
-
+using DotNetAPIDemo.Data;
 namespace DotNetAPIDemo.Controllers
 {
     [Route("api/[controller]")]
@@ -22,16 +22,16 @@ namespace DotNetAPIDemo.Controllers
 
         // GET: api/Post
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Post>>> GetPeople()
+        public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
         {
-            return await _context.People.ToListAsync();
+            return await _context.Posts.ToListAsync();
         }
 
         // GET: api/Post/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
         {
-            var post = await _context.People.FindAsync(id);
+            var post = await _context.Posts.FindAsync(id);
 
             if (post == null)
             {
@@ -77,7 +77,7 @@ namespace DotNetAPIDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Post>> PostPost(Post post)
         {
-            _context.People.Add(post);
+            _context.Posts.Add(post);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPost", new { id = post.ID }, post);
@@ -87,13 +87,13 @@ namespace DotNetAPIDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePost(int id)
         {
-            var post = await _context.People.FindAsync(id);
+            var post = await _context.Posts.FindAsync(id);
             if (post == null)
             {
                 return NotFound();
             }
 
-            _context.People.Remove(post);
+            _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace DotNetAPIDemo.Controllers
 
         private bool PostExists(int id)
         {
-            return _context.People.Any(e => e.ID == id);
+            return _context.Posts.Any(e => e.ID == id);
         }
     }
 }
