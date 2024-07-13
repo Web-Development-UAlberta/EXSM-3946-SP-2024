@@ -4,32 +4,27 @@ import useSWR from 'swr';
 import axios from 'axios';
 import { Box, Button, Typography } from '@mui/material';
 import EditDialog from 'jrgcomponents/EditDialog';
+import { DataGrid } from '@mui/x-data-grid';
 export default function Home() {
-  const { data } = useSWR('/weather', async () => {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/weatherforecast`);
-    return response.data;
-  });
+  const { data: rows } = useSWR(
+    '/posts',
+    async () => {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/api/Post`);
+      return response.data;
+    },
+    {
+      fallbackData: [],
+    },
+  );
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'title', headerName: 'Title', width: 150 },
+    { field: 'content', headerName: 'Content', width: 150 },
+    { field: 'createdAt', headerName: 'CreatedAt', width: 150 },
+  ];
   return (
     <Box component='main'>
-      <Typography variant='h1'>Hello, World!</Typography>
-      {data?.map((forecast) => (
-        <Box key={forecast.date}>
-          <Typography variant='h2'>{forecast.date}</Typography>
-          <Typography variant='body1'>{forecast.temperatureC}°C</Typography>
-          <Typography variant='body1'>{forecast.temperatureF}°F</Typography>
-          <Typography variant='body1'>{forecast.summary}</Typography>
-          <EditDialog
-            toUpdate={forecast}
-            onConfirm={async (updated) => {
-              console.log(updated);
-              //await axios.put(`${process.env.NEXT_PUBLIC_API_URI}/weatherforecast`, updated);
-            }}
-            excludeFields={['date']}
-            ButtonComponent={Button}
-            ButtonProps={{ children: 'Update', color: 'primary', variant: 'contained' }}
-          />
-        </Box>
-      ))}
+      <DataGrid rows={rows} columns={columns} />
     </Box>
   );
 }
