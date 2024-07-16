@@ -116,11 +116,19 @@ namespace DotNetAPIDemo.Controllers
         [SwaggerOperation(Summary = "Create a new comment", Description = "Creates a new comment with the provided data.")]
         [SwaggerResponse(StatusCodes.Status201Created, "Comment created successfully", typeof(Comment))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid comment data")]
-        public async Task<ActionResult<Comment>> PostComment([FromBody] Comment comment)
+        public async Task<ActionResult<Comment>> PostComment([FromBody] Comment comment, [FromHeader] string Authorization)
         {
+            if (!UserController.VerifyJWT(Authorization))
+            {
+                return Unauthorized();
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            if (string.IsNullOrWhiteSpace(comment.Author))
+            {
+                comment.Author = comment.User?.Email;
             }
 
             _context.Comments.Add(comment);

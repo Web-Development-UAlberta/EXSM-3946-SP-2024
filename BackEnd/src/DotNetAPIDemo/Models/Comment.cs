@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DotNetAPIDemo.Models
 {
@@ -17,10 +18,11 @@ namespace DotNetAPIDemo.Models
         public string? Author { get; set; }
 
         [Column("user_id")]
-        public int UserID { get; set; }
+        public int? UserID { get; set; }
 
         [ForeignKey(nameof(UserID))]
         [JsonIgnore]
+        [ValidateNever]
         public virtual User User { get; set; }
 
         [Required]
@@ -35,6 +37,7 @@ namespace DotNetAPIDemo.Models
 
         [ForeignKey(nameof(PostID))]
         [JsonIgnore]
+        [ValidateNever]
         public virtual Post Post { get; set; }
     }
 }

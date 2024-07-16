@@ -42,14 +42,21 @@ public class UserController : Controller
 
     public ActionResult<string> Register([FromHeader][SwaggerParameter("Authorization Header (Basic)", Required = true)] string Authorization)
     {
-        string AuthorizationDecoded = Base64UrlEncoder.Decode(Authorization.Replace("Basic ", ""));
-        string EMail = AuthorizationDecoded.Split(':')[0];
-        byte[] Password = Encoding.Unicode.GetBytes(AuthorizationDecoded.Split(':')[1]);
-        byte[] EncryptionSecret = Encoding.Unicode.GetBytes(Environment.GetEnvironmentVariable("ENCRYPTION_SECRET") ?? "");
-        byte[] HashedPassword = SHA256.HashData(EncryptionSecret.Concat(Password).ToArray());
-        _context.Users.Add(new User() { Email = EMail, Password = Convert.ToBase64String(HashedPassword) });
-        _context.SaveChanges();
-        return StatusCode(201, "User Registered");
+        try
+        {
+            string AuthorizationDecoded = Base64UrlEncoder.Decode(Authorization.Replace("Basic ", ""));
+            string EMail = AuthorizationDecoded.Split(':')[0];
+            byte[] Password = Encoding.Unicode.GetBytes(AuthorizationDecoded.Split(':')[1]);
+            byte[] EncryptionSecret = Encoding.Unicode.GetBytes(Environment.GetEnvironmentVariable("ENCRYPTION_SECRET") ?? "");
+            byte[] HashedPassword = SHA256.HashData(EncryptionSecret.Concat(Password).ToArray());
+            _context.Users.Add(new User() { Email = EMail, Password = Convert.ToBase64String(HashedPassword) });
+            _context.SaveChanges();
+            return StatusCode(201, "User Registered");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(400, e.Message);
+        }
     }
 
     [HttpGet()]
@@ -72,7 +79,7 @@ public class UserController : Controller
         return Authorize("Basic " + Base64UrlEncoder.Encode(email + ":" + password));
     }
 
-    [HttpPost] // Route parameters are defined in the route itself
+    [HttpPost("/api/authorize")] // Route parameters are defined in the route itself
     [SwaggerOperation(
         Summary = "Authorize a User",
         Description = "Provide a username and password and get a JWT.",
