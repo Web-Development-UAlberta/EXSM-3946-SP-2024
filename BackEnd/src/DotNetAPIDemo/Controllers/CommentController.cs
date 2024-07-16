@@ -29,7 +29,7 @@ namespace DotNetAPIDemo.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Returns the list of comments", typeof(IEnumerable<Comment>))]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
         {
-            return await _context.Comments.ToListAsync();
+            return await _context.Comments.Include(c => c.User).ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -69,6 +69,14 @@ namespace DotNetAPIDemo.Controllers
         public async Task<ActionResult<IEnumerable<Comment>>> GetCommentsByAuthor(string author)
         {
             return await _context.Comments.Where(c => c.Author == author).ToListAsync();
+        }
+
+        [HttpGet("byuser/{userID}")]
+        [SwaggerOperation(Summary = "Get comments by a specific author (a user)", Description = "Retrieves all comments by a given author.")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Returns the list of comments by the user", typeof(IEnumerable<Comment>))]
+        public async Task<ActionResult<IEnumerable<Comment>>> GetCommentsByUser(int userID)
+        {
+            return await _context.Comments.Where(c => c.User.ID == userID).Include(c => c.User).ToListAsync();
         }
 
         [HttpPut("{id}")]

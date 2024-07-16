@@ -12,10 +12,16 @@ namespace DotNetAPIDemo.Models
         [Column("id")]
         public int ID { get; set; }
 
-        [Required]
         [MaxLength(30)]
         [Column("author", TypeName = "varchar(30)")]
-        public string Author { get; set; } = "";
+        public string? Author { get; set; }
+
+        [Column("user_id")]
+        public int UserID { get; set; }
+
+        [ForeignKey(nameof(UserID))]
+        [JsonIgnore]
+        public virtual User User { get; set; }
 
         [Required]
         [Column("text", TypeName = "text")]
