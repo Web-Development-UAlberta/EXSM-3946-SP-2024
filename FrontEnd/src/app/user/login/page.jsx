@@ -20,8 +20,10 @@ export default function IdentifyPage() {
                 Authorization: `Basic ${btoa(getCookie('email'))}:${btoa(password)}`,
               },
             },
-          ).data;
-          setCookie('jwt', jwt);
+          );
+          if (jwt.status === 200) {
+            setCookie('jwt', jwt.data);
+          }
           router.push('/');
         }}
       >

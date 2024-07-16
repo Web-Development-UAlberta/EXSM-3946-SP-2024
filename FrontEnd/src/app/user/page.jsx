@@ -12,7 +12,7 @@ export default function IdentifyPage() {
       <TextField onChange={(event) => setEmail(event.target.value)} value={email} label='Email' />
       <Button
         onClick={async () => {
-          const exists = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/user/exists?email=${email}`).data;
+          const exists = (await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/user/exists?email=${email}`)).data;
           setCookie('email', email);
           if (exists) {
             router.push('/user/login');
