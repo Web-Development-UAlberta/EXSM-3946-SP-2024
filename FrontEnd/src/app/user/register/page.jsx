@@ -4,7 +4,7 @@ import React from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { getCookie } from 'cookies-next';
-export default function IdentifyPage() {
+export default function RegisterPage() {
   const [password, setPassword] = React.useState('');
   const router = useRouter();
   return (

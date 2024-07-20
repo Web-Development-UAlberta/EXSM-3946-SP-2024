@@ -27,7 +27,7 @@
     "axios": "^1.7.2",
     "cookies-next": "^4.2.1",
     "jrgcomponents": "^0.0.166",
-    "next": "^14.2.4",
+    "next": "^14.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "swr": "^2.2.5"

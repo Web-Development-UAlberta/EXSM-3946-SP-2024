@@ -142,6 +142,33 @@ public class UserController : Controller
         }
 
     }
+    [HttpGet("/api/user/exists")] // Route parameters are defined in the route itself
+    [SwaggerOperation(
+       Summary = "Check if a User Exists",
+       Description = "See if a user exists.",
+       OperationId = "CheckIfUserExists",
+       Tags = new[] { "API", "Authentication" }
+   )]
+
+    [SwaggerResponse(200, "Success", typeof(string))]
+    [SwaggerResponse(404, "Not Found", typeof(string))]
+    [SwaggerResponse(500, "Internal Server Error", typeof(string))]
+    public ActionResult<string> UserExists(
+       [FromQuery][SwaggerParameter("Authorization Header (JWT)", Required = true)] string email
+   )
+    {
+        User user = _context.Users.SingleOrDefault(u => u.Email == email);
+
+        if (user == null)
+        {
+            return StatusCode(404, "Could not find that user.");
+        }
+        else
+        {
+            return StatusCode(200, "User exists.");
+        }
+
+    }
     public User GetUserFromJWT(string JWT)
     {
         string[] JWTParts = JWT.Replace("Bearer ", "").Split('.');

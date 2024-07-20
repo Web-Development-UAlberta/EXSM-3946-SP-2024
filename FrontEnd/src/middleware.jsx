@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 export default async function Middleware(request) {
+  if (request.nextUrl.pathname.startsWith('/_next/') || request.nextUrl.pathname.startsWith('/api/') || request.nextUrl.pathname === '/favicon.ico') {
+    return NextResponse.next();
+  }
   const jwt = request.cookies.get('jwt')?.value;
   console.log('JWT: ', jwt);
   if (!request.nextUrl.pathname.startsWith('/user')) {
