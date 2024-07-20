@@ -15,16 +15,6 @@ public class UserController : Controller
         _context = context;
     }
 
-    [HttpGet()]
-    [SwaggerOperation(
-        Summary = "Register a User",
-        Description = "Register a user.")
-    ]
-    public ActionResult Register()
-    {
-        return View();
-    }
-
     [HttpPost]
     public ActionResult<string> Register([FromForm] string email, [FromForm] string password) => Register("Basic " + Base64UrlEncoder.Encode(email + ":" + password));
 
@@ -57,16 +47,6 @@ public class UserController : Controller
         {
             return StatusCode(400, e.Message);
         }
-    }
-
-    [HttpGet()]
-    [SwaggerOperation(
-        Summary = "Login a User",
-        Description = "Provide a username and password and get a JWT.")
-    ]
-    public ActionResult Login()
-    {
-        return View();
     }
 
     [HttpPost]
