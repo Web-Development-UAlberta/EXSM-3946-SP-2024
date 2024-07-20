@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using DotNetAPIDemo.Data;
+using Microsoft.EntityFrameworkCore;
 
 public class UserController : Controller
 {
@@ -15,9 +16,10 @@ public class UserController : Controller
         _context = context;
     }
 
+    /*
     [HttpPost]
     public ActionResult<string> Register([FromForm] string email, [FromForm] string password) => Register("Basic " + Base64UrlEncoder.Encode(email + ":" + password));
-
+    */
 
 
     [HttpPost("/api/register")]
@@ -49,6 +51,7 @@ public class UserController : Controller
         }
     }
 
+    /*
     [HttpPost]
     [SwaggerOperation(
         Summary = "Login a User From Form",
@@ -58,7 +61,7 @@ public class UserController : Controller
     {
         return Authorize("Basic " + Base64UrlEncoder.Encode(email + ":" + password));
     }
-
+    */
     [HttpPost("/api/authorize")] // Route parameters are defined in the route itself
     [SwaggerOperation(
         Summary = "Authorize a User",
@@ -97,6 +100,57 @@ public class UserController : Controller
 
     }
 
+
+    [HttpPost("/api/user")] // Route parameters are defined in the route itself
+    [SwaggerOperation(
+        Summary = "Authorize a User",
+        Description = "Provide a username and password and get a JWT.",
+        OperationId = "AuthorizeUser",
+        Tags = new[] { "API", "Authentication" }
+    )]
+
+    [SwaggerResponse(200, "Success", typeof(string))]
+    [SwaggerResponse(400, "Bad Request", typeof(string))]
+    [SwaggerResponse(401, "Unauthorized", typeof(string))]
+    [SwaggerResponse(500, "Internal Server Error", typeof(string))]
+    public ActionResult<string> GetUser(
+        [FromHeader][SwaggerParameter("Authorization Header (JWT)", Required = true)] string Authorization
+    )
+    {
+        if (!VerifyJWT(Authorization))
+        {
+            return StatusCode(401, "Invalid JWT");
+        }
+        User user;
+        try
+        {
+            user = GetUserFromJWT(Authorization);
+
+        }
+        catch (Exception e)
+        {
+            return StatusCode(400, e.Message);
+        }
+
+        if (user == null)
+        {
+            return StatusCode(404, "Could not find that user.");
+        }
+        else
+        {
+            return StatusCode(200, user);
+        }
+
+    }
+    public User GetUserFromJWT(string JWT)
+    {
+        string[] JWTParts = JWT.Replace("Bearer ", "").Split('.');
+        string JWTPayload = Base64UrlEncoder.Decode(JWTParts[1]);
+        int ID = int.Parse(JWTPayload.Split(':')[1].Split(',')[0].Replace("\"", ""));
+        User target = _context.Users.SingleOrDefault(user => user.ID == ID);
+        target.Password = "";
+        return target;
+    }
     public static bool VerifyJWT(string JWT)
     {
         string[] JWTParts = JWT.Replace("Bearer ", "").Split('.');
