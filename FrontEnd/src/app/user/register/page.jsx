@@ -13,11 +13,11 @@ export default function RegisterPage() {
       <Button
         onClick={async () => {
           const registration = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URI}/register`,
+            `${process.env.NEXT_PUBLIC_API_URI}/api/register`,
             {},
             {
               headers: {
-                Authorization: `Basic ${btoa(getCookie('email'))}:${btoa(password)}`,
+                Authorization: `Basic ${btoa(getCookie('email') + ':' + password)}`,
               },
             },
           );

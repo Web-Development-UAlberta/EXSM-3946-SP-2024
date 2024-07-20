@@ -12,13 +12,17 @@ export default function IdentifyPage() {
       <TextField onChange={(event) => setEmail(event.target.value)} value={email} label='Email' />
       <Button
         onClick={async () => {
-          console.log(`${process.env.NEXT_PUBLIC_API_URI}/user/exists?email=${email}`);
-          const exists = (await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/user/exists?email=${email}`)).data;
-          setCookie('email', email);
-          if (exists) {
-            router.push('/user/login');
-          } else {
-            router.push('/user/register');
+          try {
+            const exists = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/user/exists?email=${email}`, { validateStatus: (status) => [200, 404].includes(status) });
+            console.log(exists);
+            setCookie('email', email);
+            if (exists.status === 200) {
+              router.push('/user/login');
+            } else if (exists.status === 404) {
+              router.push('/user/register');
+            }
+          } catch (error) {
+            console.error('Error:', error);
           }
         }}
       >

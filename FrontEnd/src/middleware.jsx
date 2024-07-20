@@ -9,12 +9,18 @@ export default async function Middleware(request) {
   if (!request.nextUrl.pathname.startsWith('/user')) {
     if (jwt) {
       console.log('JWT Present, Validating...');
-      const validateJWTResponse = await axios.get(`${process.env.API_URI}/user`, {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
+      console.log(`${process.env.NEXT_PUBLIC_API_URI}/api/user`);
+      const validateJWTResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URI}/api/user`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+          validateStatus: () => true,
         },
-        validateStatus: () => true,
-      });
+      );
+      console.log(validateJWTResponse);
       if (validateJWTResponse.status === 200) {
         return NextResponse.next();
       } else {

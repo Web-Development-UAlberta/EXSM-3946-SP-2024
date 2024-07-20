@@ -13,11 +13,11 @@ export default function LoginPage() {
       <Button
         onClick={async () => {
           const jwt = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URI}/authorize`,
+            `${process.env.NEXT_PUBLIC_API_URI}/api/authorize`,
             {},
             {
               headers: {
-                Authorization: `Basic ${btoa(getCookie('email'))}:${btoa(password)}`,
+                Authorization: `Basic ${btoa(getCookie('email') + ':' + password)}`,
               },
             },
           );
