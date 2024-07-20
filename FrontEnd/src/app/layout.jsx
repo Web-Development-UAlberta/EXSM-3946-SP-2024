@@ -1,4 +1,3 @@
-'use client';
 import 'jrgcomponents/Style/Global';
 import ThemedAppWrapper from 'jrgcomponents/AppWrapper/Wrapper/Themed';
 import React from 'react';

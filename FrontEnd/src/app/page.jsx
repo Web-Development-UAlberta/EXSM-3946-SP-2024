@@ -1,35 +1,63 @@
 'use client';
 import React from 'react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import axios from 'axios';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
+import { Comment, Edit } from '@mui/icons-material';
+import { DataGrid } from '@mui/x-data-grid';
 import EditDialog from 'jrgcomponents/EditDialog';
+import Dialog from 'jrgcomponents/Dialog';
+import Comments from './Comments';
+
 export default function Home() {
-  const { data } = useSWR('/weather', async () => {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/weatherforecast`);
-    return response.data;
-  });
+  const { data: rows } = useSWR(
+    '/posts',
+    async () => {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/api/Post`);
+      return response.data;
+    },
+    {
+      fallbackData: [],
+    },
+  );
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'title', headerName: 'Title', width: 150 },
+    { field: 'content', headerName: 'Content', width: 150 },
+    { field: 'createdAt', headerName: 'CreatedAt', width: 150 },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      renderCell: (cellValues) => {
+        return (
+          <>
+            <Dialog
+              title={`Comments of Post #${cellValues.row.id}`}
+              content={<Comments postID={cellValues.row.id} />}
+              ButtonComponent={IconButton}
+              ButtonProps={{ children: <Comment /> }}
+            />
+
+            <EditDialog
+              toUpdate={cellValues.row}
+              excludeFields={['id', 'createdAt']}
+              ButtonComponent={IconButton}
+              ButtonProps={{ children: <Edit /> }}
+              onConfirm={async (data) => {
+                console.log('New Data:', data);
+                await axios.put(`${process.env.NEXT_PUBLIC_API_URI}/api/Post/${cellValues.row.id}`, { ...cellValues.row, ...data });
+                mutate('/posts');
+              }}
+            />
+          </>
+        );
+      },
+    },
+  ];
   return (
     <Box component='main'>
-      <Typography variant='h1'>Hello, World!</Typography>
-      {data?.map((forecast) => (
-        <Box key={forecast.date}>
-          <Typography variant='h2'>{forecast.date}</Typography>
-          <Typography variant='body1'>{forecast.temperatureC}°C</Typography>
-          <Typography variant='body1'>{forecast.temperatureF}°F</Typography>
-          <Typography variant='body1'>{forecast.summary}</Typography>
-          <EditDialog
-            toUpdate={forecast}
-            onConfirm={async (updated) => {
-              console.log(updated);
-              //await axios.put(`${process.env.NEXT_PUBLIC_API_URI}/weatherforecast`, updated);
-            }}
-            excludeFields={['date']}
-            ButtonComponent={Button}
-            ButtonProps={{ children: 'Update', color: 'primary', variant: 'contained' }}
-          />
-        </Box>
-      ))}
+      <DataGrid rows={rows} columns={columns} />
     </Box>
   );
 }
